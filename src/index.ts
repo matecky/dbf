@@ -1,4 +1,4 @@
-import { parse } from '@babel/parser';
+import { parse, parseExpression } from '@babel/parser';
 import { Deobfuscator } from './deobfuscator/deobfuscator';
 import { Config, defaultConfig } from './deobfuscator/transformations/config';
 
@@ -9,8 +9,8 @@ import { Config, defaultConfig } from './deobfuscator/transformations/config';
  * @returns The deobfuscated code.
  */
 export function deobfuscate(source: string, config: Config = defaultConfig): string {
-    const ast = parse(source);
-
+    (globalThis as any).parser = { parse, parseExpression };
+    const ast = parse(source, { sourceType: 'unambiguous' });
     const deobfuscator = new Deobfuscator(ast, config);
     const output = deobfuscator.execute();
 
